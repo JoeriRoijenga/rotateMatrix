@@ -1,3 +1,5 @@
+import sys
+
 def printMatrix(matrix):
     print("")
     for row in matrix:
@@ -22,6 +24,49 @@ def rotateMatrixLeft(matrix):
         layer += 1
 
     return matrix
+
+def rotate(matrix, leftRight):
+    layer = 0
+    for length in range(len(matrix) - 1, 1, -1):
+        for startPoint in range(layer, length, 1):
+            saveValue = swap(matrix, save = True, points = switch(leftRight, (startPoint - startPoint + layer), startPoint))
+            # save = matrix[points[0]][points[1]]
+            
+            swap(matrix, points = switch(leftRight, (startPoint - startPoint + layer), startPoint, startPoint, length))
+            swap(matrix, points = switch(leftRight, startPoint, length, length, (length - startPoint + layer)))
+            swap(matrix, points = switch(leftRight, length, (length - startPoint + layer), (length - startPoint + layer), (startPoint - startPoint + layer)))
+
+            # swap(matrix, save = saveValue, points = switch(leftRight, (length - startPoint + layer), (startPoint - startPoint + layer)))\
+            points = switch(leftRight, (length - startPoint + layer), (startPoint - startPoint + layer))
+            matrix[points[0]][points[1]] = saveValue
+        
+        layer += 1
+
+    return matrix
+
+def swap(matrix, **kwargs):
+    points = kwargs.get("points")
+
+    if "save" in kwargs:
+        if kwargs.get("save") == True:
+            return matrix[points[0]][points[1]]
+        else:
+            print(kwargs.get("save"))
+            matrix[points[0]][points[1]] = kwargs.get("save")
+    else:
+        matrix[points[0]][points[1]] = matrix[points[2]][points[3]]
+
+def switch(swap, *args):    
+    if(len(args) == 2):
+        if (swap):
+            return args[1], args[0]
+        return args[0], args[1]
+    elif(len(args) == 4):
+        if (swap):
+            return args[1], args[0], args[3], args[2]
+        return args[0], args[1], args[2], args[3]
+
+    return False
 
 if __name__ == "__main__":
     matrices = [
@@ -53,13 +98,17 @@ if __name__ == "__main__":
         ],
     ]
 
+    leftRight = False
+    if len(sys.argv) > 1 and sys.argv[1].lower() == "right":
+        leftRight = True
+
     number = 1
     
     for matrix in matrices:
         print("Matrix %i:" % (number))
         printMatrix(matrix)
 
-        matrix = rotateMatrixLeft(matrix)
+        matrix = rotate(matrix, leftRight)
 
         printMatrix(matrix)
         number +=1
