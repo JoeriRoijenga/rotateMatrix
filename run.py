@@ -1,5 +1,6 @@
 import sys
 
+# Printing the matrix
 def printMatrix(matrix):
     print("")
     for row in matrix:
@@ -8,55 +9,42 @@ def printMatrix(matrix):
             str += "[%i] " % (item)
         print(str)
     print("")
-        
 
-def rotateMatrixLeft(matrix):
-    layer = 0
-    for length in range(len(matrix) - 1, 1, -1):
-        for startPoint in range(layer, length, 1):
-            save = matrix[startPoint - startPoint + layer][startPoint]
-
-            matrix[startPoint - startPoint + layer][startPoint] = matrix[startPoint][length]
-            matrix[startPoint][length] = matrix[length][length - startPoint + layer]
-            matrix[length][length - startPoint + layer] = matrix[length - startPoint + layer][startPoint - startPoint + layer]
-            matrix[length - startPoint + layer][startPoint - startPoint + layer] = save
-        
-        layer += 1
-
-    return matrix
-
+# Rotating values
 def rotate(matrix, leftRight):
     layer = 0
     for length in range(len(matrix) - 1, 1, -1):
         for startPoint in range(layer, length, 1):
-            saveValue = swap(matrix, save = True, points = switch(leftRight, (startPoint - startPoint + layer), startPoint))
-            # save = matrix[points[0]][points[1]]
+            # Retrieving first value
+            saveValue = swapMatrixValues(matrix, save = True, points = swapPointerValues(leftRight, (startPoint - startPoint + layer), startPoint))
             
-            swap(matrix, points = switch(leftRight, (startPoint - startPoint + layer), startPoint, startPoint, length))
-            swap(matrix, points = switch(leftRight, startPoint, length, length, (length - startPoint + layer)))
-            swap(matrix, points = switch(leftRight, length, (length - startPoint + layer), (length - startPoint + layer), (startPoint - startPoint + layer)))
+            # Swapping values from every side
+            swapMatrixValues(matrix, points = swapPointerValues(leftRight, (startPoint - startPoint + layer), startPoint, startPoint, length))
+            swapMatrixValues(matrix, points = swapPointerValues(leftRight, startPoint, length, length, (length - startPoint + layer)))
+            swapMatrixValues(matrix, points = swapPointerValues(leftRight, length, (length - startPoint + layer), (length - startPoint + layer), (startPoint - startPoint + layer)))
 
-            # swap(matrix, save = saveValue, points = switch(leftRight, (length - startPoint + layer), (startPoint - startPoint + layer)))\
-            points = switch(leftRight, (length - startPoint + layer), (startPoint - startPoint + layer))
-            matrix[points[0]][points[1]] = saveValue
+            # swapping last value with the saved one
+            swapMatrixValues(matrix, save = saveValue, points = swapPointerValues(leftRight, (length - startPoint + layer), (startPoint - startPoint + layer)))
         
         layer += 1
 
     return matrix
 
-def swap(matrix, **kwargs):
+# Swapping values from side to side
+def swapMatrixValues(matrix, **kwargs):
     points = kwargs.get("points")
 
     if "save" in kwargs:
-        if kwargs.get("save") == True:
+        save = kwargs.get("save")
+        if save == True and isinstance(save, bool):
             return matrix[points[0]][points[1]]
         else:
-            print(kwargs.get("save"))
-            matrix[points[0]][points[1]] = kwargs.get("save")
+            matrix[points[0]][points[1]] = save
     else:
         matrix[points[0]][points[1]] = matrix[points[2]][points[3]]
 
-def switch(swap, *args):    
+# Swapping pointer positions, for left or right rotation
+def swapPointerValues(swap, *args):    
     if(len(args) == 2):
         if (swap):
             return args[1], args[0]
